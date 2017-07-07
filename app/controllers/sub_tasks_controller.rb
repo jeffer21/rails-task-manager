@@ -10,9 +10,15 @@ class SubTasksController < ApplicationController
 
   end
   def create
-    @sub_task = @task.sub_task.new(update_params)
-    if @sub_task.save
-      redirect_to task_path(@task)
+    if params[:task_id].present?
+      @task = Task.find(params[:task_id])
+      @sub_task = @task.sub_tasks.new(update_params)
+    else
+      @sub_task = SubTask.new(update_params)
+      @task = @sub_task.task
+    end
+     if @sub_task.save
+      redirect_to task_path(@sub_task.task)
     else
       render "tasks/show"
     end
@@ -40,7 +46,7 @@ class SubTasksController < ApplicationController
     @sub_task = SubTask.find(params[:id])
   end
   def update_params
-    params.require(:sub_task).permit(:name)
+    params.require(:sub_task).permit(:name, :photo, :photo_cache, :task_id)
   end
 
 end
